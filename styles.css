@@ -189,10 +189,74 @@ p {
 }
 
 /* Contact */
-#contact a {
+#contact a:not(.social-link) {
     color: #FF6600;
     font-weight: bold;
 }
+
+/* Liens réseaux sociaux */
+.social-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    color: #003366; /* Couleur icône via currentColor */
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    background: #f7f9fc;
+}
+
+.social-link svg {
+    width: 28px;
+    height: 28px;
+}
+
+.social-link img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: block;
+}
+
+/* HelloAsso recolorable via mask */
+.helloasso-mark {
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    background-color: currentColor; /* permet de teinter l’icône */
+    -webkit-mask-image: url('helloasso.png');
+    -webkit-mask-size: cover;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-image: url('helloasso.png');
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    border-radius: 50%;
+}
+
+/* Couleurs spécifiques au hover */
+.social-link.facebook:hover { color: #1877F2; }
+.social-link.email:hover { color: #FF6600; }
+.social-link.helloasso:hover { color: #00A15C; }
 
 /* Footer */
 footer {
