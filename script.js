@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let slides = [];
         let currentIndex = 0;
         let autoTimer = null;
-        const AUTO_DELAY = 5000;
+        const AUTO_DELAY = 6000;
 
         function setIndex(index, { animate = true } = {}) {
             if (!slides.length) return;
