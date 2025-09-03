@@ -135,7 +135,7 @@ nav ul li a:hover {
 }
 
 .mobile-menu-toggle.active span:nth-child(1) {
-    transform: rotate(45deg) translate(8px, 8px);
+    transform: translateY(11px) rotate(45deg);
 }
 
 .mobile-menu-toggle.active span:nth-child(2) {
@@ -143,7 +143,7 @@ nav ul li a:hover {
 }
 
 .mobile-menu-toggle.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(8px, -8px);
+    transform: translateY(-11px) rotate(-45deg);
 }
 
 /* Main et sections */
