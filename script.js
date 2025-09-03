@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Marquer le DOM comme prêt pour activer certaines transitions CSS sans flicker
+    document.body.classList.add('js-ready');
     // ===================== Mobile Menu =====================
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
@@ -23,6 +25,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
             closeMenu();
         }
+    });
+
+    // Fermer/normaliser le menu quand on repasse en desktop pour éviter les états incohérents
+    let wasMobile = window.matchMedia('(max-width: 992px)').matches;
+    window.addEventListener('resize', () => {
+        const isMobile = window.matchMedia('(max-width: 992px)').matches;
+        if (!isMobile && wasMobile) {
+            closeMenu();
+        }
+        wasMobile = isMobile;
     });
 
     // ===================== Generic Carousel Initializer =====================
