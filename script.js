@@ -1,32 +1,31 @@
-// Menu burger functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // ===================== Mobile Menu =====================
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-menu a');
 
-    // Toggle menu when burger button is clicked
-    mobileMenuToggle.addEventListener('click', function() {
+    function closeMenu() {
+        mobileMenuToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+    }
+
+    mobileMenuToggle.addEventListener('click', function(event) {
+        event.stopPropagation();
         mobileMenuToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
 
-    // Close menu when a link is clicked
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            mobileMenuToggle.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
+        link.addEventListener('click', closeMenu);
     });
 
-    // Close menu when clicking outside
     document.addEventListener('click', function(event) {
         if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-            mobileMenuToggle.classList.remove('active');
-            navMenu.classList.remove('active');
+            closeMenu();
         }
     });
 
-    // ===================== Carrousel Photos =====================
+    // ===================== Photos Carousel =====================
     const photosSection = document.getElementById('photos');
     if (photosSection) {
         const track = photosSection.querySelector('.carousel-track');
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function startAuto() {
             stopAuto();
-            autoTimer = setInterval(() => setIndex(currentIndex + 1), AUTO_DELAY);
+            autoTimer = setInterval(() => navigate(1), AUTO_DELAY);
         }
 
         function stopAuto() {
@@ -65,6 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(autoTimer);
                 autoTimer = null;
             }
+        }
+
+        function navigate(direction) {
+            setIndex(currentIndex + direction);
+            startAuto();
         }
 
         function buildSlides(images) {
@@ -85,7 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 dot.type = 'button';
                 dot.setAttribute('role', 'tab');
                 dot.setAttribute('aria-label', `Aller à la photo ${i + 1}`);
-                dot.addEventListener('click', () => setIndex(i));
+                dot.addEventListener('click', () => {
+                    setIndex(i);
+                    startAuto();
+                });
                 dotsContainer.appendChild(dot);
                 return li;
             });
@@ -107,45 +114,51 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (e) {
                 // ignore and fallback
             }
-            // Fallback: try to load a few common names (up to 10)
+            // Fallback: try to load a few common names
             const guesses = Array.from({ length: 10 }, (_, i) => `pictures/photo${i + 1}.jpg`);
             const checks = await Promise.all(guesses.map(src => fetch(src, { method: 'HEAD' }).then(r => r.ok ? src : null).catch(() => null)));
             const found = checks.filter(Boolean).map(src => ({ src, alt: '' }));
             buildSlides(found);
         }
 
-        // Controls
-        prevBtn.addEventListener('click', () => { setIndex(currentIndex - 1); startAuto(); });
-        nextBtn.addEventListener('click', () => { setIndex(currentIndex + 1); startAuto(); });
+        // --- Event Listeners ---
+        prevBtn.addEventListener('click', () => navigate(-1));
+        nextBtn.addEventListener('click', () => navigate(1));
 
-        // Keyboard
         viewport.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') { e.preventDefault(); setIndex(currentIndex - 1); startAuto(); }
-            if (e.key === 'ArrowRight') { e.preventDefault(); setIndex(currentIndex + 1); startAuto(); }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigate(-1);
+            }
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navigate(1);
+            }
         });
 
-        // Resize handling to keep slide width in sync
         window.addEventListener('resize', () => setIndex(currentIndex, { animate: false }));
 
-        // Touch/Swipe
-        let startX = 0;
-        let deltaX = 0;
+        // Touch/Swipe handling
+        let touchStartX = 0;
+        let touchDeltaX = 0;
         viewport.addEventListener('touchstart', (e) => {
             stopAuto();
-            startX = e.touches[0].clientX;
-            deltaX = 0;
+            touchStartX = e.touches[0].clientX;
+            touchDeltaX = 0;
             track.style.transition = 'none';
         });
+
         viewport.addEventListener('touchmove', (e) => {
             if (!slides.length) return;
-            deltaX = e.touches[0].clientX - startX;
-            const offset = -currentIndex * viewport.clientWidth + deltaX;
+            touchDeltaX = e.touches[0].clientX - touchStartX;
+            const offset = -currentIndex * viewport.clientWidth + touchDeltaX;
             track.style.transform = `translateX(${offset}px)`;
         });
+
         viewport.addEventListener('touchend', () => {
             const threshold = viewport.clientWidth * 0.2;
-            if (Math.abs(deltaX) > threshold) {
-                setIndex(currentIndex + (deltaX < 0 ? 1 : -1));
+            if (Math.abs(touchDeltaX) > threshold) {
+                setIndex(currentIndex + (touchDeltaX < 0 ? 1 : -1));
             } else {
                 setIndex(currentIndex);
             }
