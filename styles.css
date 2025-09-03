@@ -283,7 +283,7 @@ footer {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .main-container {
         width: 95%;
         padding: 10px;
