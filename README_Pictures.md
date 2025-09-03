@@ -20,3 +20,18 @@ Exemple:
 ```
 
 Placez les fichiers d’images (jpg, png, webp, etc.) dans `pictures/` et mettez à jour le `manifest.json`. Le site essaiera aussi automatiquement `pictures/photo1.jpg` à `pictures/photo10.jpg` si aucun manifeste n’est présent.
+
+## Optimisation des images
+
+Pour garantir un chargement rapide du site, il est crucial d'optimiser les images avant de les ajouter. Des images trop lourdes peuvent ralentir considérablement la page.
+
+**Quelques conseils :**
+
+- **Redimensionnez les images :** Inutile d'utiliser des images de 4000px de large. Une largeur de 1200px est souvent suffisante pour le web.
+- **Compressez les images :** Utilisez des outils en ligne ou des logiciels pour réduire le poids des fichiers sans trop perdre en qualité.
+
+**Outils recommandés :**
+
+- [TinyPNG](https://tinypng.com/) (pour les fichiers PNG et JPG)
+- [Squoosh](https://squoosh.app/)
+- [ImageOptim](https://imageoptim.com/mac) (pour macOS)
