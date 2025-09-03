@@ -534,7 +534,6 @@ footer {
 
 .carousel-btn:hover { transform: translateY(-2px); background: var(--color-secondary); }
 .carousel-btn:active { transform: translateY(0); }
-.carousel-btn:focus { outline: 2px solid var(--color-secondary); outline-offset: 2px; }
 
 .carousel-dots {
     grid-column: 1 / -1;
