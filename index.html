@@ -80,16 +80,17 @@
                     <p>Les entrainements ont lieu le lundi et vendredi soirs à partir de 20h15 au gymnase Jean Sidoine de Plan d'Orgon.</p>
                 </section>
 
-                <section id="sponsors">
+                <section id="sponsors" aria-label="Galerie des sponsors">
                     <h2>Nos Sponsors</h2>
-                    <div class="sponsor-logos">
-                        <div class="sponsor">
-                            <a href="https://www.claas-avignon.fr/" target="_blank" rel="noopener noreferrer">Claas</a>
+                    <div class="carousel" aria-label="Carrousel des sponsors">
+                        <button class="carousel-btn prev" aria-label="Sponsor précédent" title="Précédent">&#8249;</button>
+                        <div class="carousel-viewport" tabindex="0" aria-roledescription="diaporama">
+                            <ul class="carousel-track" aria-live="polite"></ul>
                         </div>
-                        <div class="sponsor">
-                            <a href="https://heatraining.fr/" target="_blank" rel="noopener noreferrer">Heat Training</a>
-                        </div>
+                        <button class="carousel-btn next" aria-label="Sponsor suivant" title="Suivant">&#8250;</button>
+                        <div class="carousel-dots" role="tablist" aria-label="Naviguer dans le carrousel des sponsors"></div>
                     </div>
+                    <p class="carousel-empty">Aucun sponsor pour le moment.</p>
                 </section>
 
                 <section id="photos" aria-label="Galerie photos">

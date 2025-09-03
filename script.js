@@ -25,15 +25,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===================== Photos Carousel =====================
-    const photosSection = document.getElementById('photos');
-    if (photosSection) {
-        const track = photosSection.querySelector('.carousel-track');
-        const viewport = photosSection.querySelector('.carousel-viewport');
-        const prevBtn = photosSection.querySelector('.prev');
-        const nextBtn = photosSection.querySelector('.next');
-        const dotsContainer = photosSection.querySelector('.carousel-dots');
-        const emptyMsg = photosSection.querySelector('.carousel-empty');
+    // ===================== Generic Carousel Initializer =====================
+    function initCarousel(sectionElement) {
+        const track = sectionElement.querySelector('.carousel-track');
+        const viewport = sectionElement.querySelector('.carousel-viewport');
+        const prevBtn = sectionElement.querySelector('.prev');
+        const nextBtn = sectionElement.querySelector('.next');
+        const dotsContainer = sectionElement.querySelector('.carousel-dots');
+        const emptyMsg = sectionElement.querySelector('.carousel-empty');
+        const sectionId = sectionElement.id; // 'photos' or 'sponsors'
+
+        if (!track || !viewport || !prevBtn || !nextBtn || !dotsContainer || !emptyMsg) {
+            console.error(`Carousel structure missing in section #${sectionId}`);
+            return;
+        }
 
         let slides = [];
         let currentIndex = 0;
@@ -74,21 +79,35 @@ document.addEventListener('DOMContentLoaded', function() {
         function buildSlides(images) {
             track.innerHTML = '';
             dotsContainer.innerHTML = '';
-            slides = images.map((img, i) => {
+            slides = images.map((imgData, i) => {
                 const li = document.createElement('li');
                 li.className = 'carousel-slide';
+
                 const imageEl = document.createElement('img');
                 imageEl.loading = 'lazy';
-                imageEl.alt = img.alt || `Photo ${i + 1}`;
-                imageEl.src = img.src;
-                li.appendChild(imageEl);
+                imageEl.alt = imgData.alt || `Image ${i + 1}`;
+                imageEl.src = imgData.src;
+
+                let slideContent = imageEl;
+
+                // If href is present, wrap the image in a link
+                if (imgData.href) {
+                    const link = document.createElement('a');
+                    link.href = imgData.href;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.appendChild(imageEl);
+                    slideContent = link;
+                }
+                
+                li.appendChild(slideContent);
                 track.appendChild(li);
 
                 const dot = document.createElement('button');
                 dot.className = 'carousel-dot';
                 dot.type = 'button';
                 dot.setAttribute('role', 'tab');
-                dot.setAttribute('aria-label', `Aller à la photo ${i + 1}`);
+                dot.setAttribute('aria-label', `Aller à l'élément ${i + 1}`);
                 dot.addEventListener('click', () => {
                     setIndex(i);
                     startAuto();
@@ -103,22 +122,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async function loadManifest() {
             try {
-                const res = await fetch('pictures/manifest.json', { cache: 'no-cache' });
+                const path = sectionId === 'photos' ? 'pictures' : sectionId;
+                const manifestPath = `${path}/manifest.json`;
+                const res = await fetch(manifestPath, { cache: 'no-cache' });
                 if (!res.ok) throw new Error('manifest not found');
                 const data = await res.json();
                 if (Array.isArray(data) && data.length) {
-                    const images = data.map(item => ({ src: `pictures/${item.src || item}`, alt: item.alt || '' }));
+                    const images = data.map(item => ({
+                        src: `${path}/${item.src || item}`,
+                        alt: item.alt || '',
+                        href: item.href || null
+                    }));
                     buildSlides(images);
                     return;
                 }
             } catch (e) {
-                // ignore and fallback
+                console.error(`Failed to load carousel for #${sectionId}:`, e);
             }
-            // Fallback: try to load a few common names
-            const guesses = Array.from({ length: 10 }, (_, i) => `pictures/photo${i + 1}.jpg`);
-            const checks = await Promise.all(guesses.map(src => fetch(src, { method: 'HEAD' }).then(r => r.ok ? src : null).catch(() => null)));
-            const found = checks.filter(Boolean).map(src => ({ src, alt: '' }));
-            buildSlides(found);
+            buildSlides([]); // Ensure carousel is empty on failure
         }
 
         // --- Event Listeners ---
@@ -126,19 +147,12 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', () => navigate(1));
 
         viewport.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                navigate(-1);
-            }
-            if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                navigate(1);
-            }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); navigate(1); }
         });
 
         window.addEventListener('resize', () => setIndex(currentIndex, { animate: false }));
 
-        // Touch/Swipe handling
         let touchStartX = 0;
         let touchDeltaX = 0;
         viewport.addEventListener('touchstart', (e) => {
@@ -166,5 +180,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         loadManifest();
+    }
+
+    // Initialize all carousels on the page
+    const photosSection = document.getElementById('photos');
+    if (photosSection) {
+        initCarousel(photosSection);
+    }
+
+    const sponsorsSection = document.getElementById('sponsors');
+    if (sponsorsSection) {
+        initCarousel(sponsorsSection);
     }
 });
