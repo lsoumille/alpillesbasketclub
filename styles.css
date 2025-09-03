@@ -197,25 +197,6 @@ p {
     color: var(--color-text-primary);
 }
 
-/* Sponsors */
-.sponsor-logos {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.sponsor a {
-    font-weight: bold;
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: 1.1em;
-}
-
-.sponsor a:hover {
-    color: var(--color-secondary);
-}
 
 /* Contact */
 #contact a:not(.social-link) {
@@ -526,10 +507,22 @@ footer {
     background: #f4f6f8;
 }
 
+.carousel-slide a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
 .carousel-slide img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+#sponsors .carousel-slide {
+    height: 200px;
 }
 
 .carousel-btn {
