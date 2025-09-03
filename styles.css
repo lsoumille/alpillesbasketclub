@@ -82,6 +82,7 @@ header {
     font-size: 1.8em;
     font-weight: 700;
     color: var(--color-primary);
+    transition: font-size 200ms ease;
 }
 
 .orange-letter {
@@ -420,6 +421,21 @@ footer {
         padding: 8px 12px;
         font-size: 0.9em;
     }
+}
+
+/* Masquer le texte du logo sur très petits écrans */
+@media (max-width: 600px) {
+    .logo-text { font-size: 1.3em; }
+}
+
+@media (max-width: 480px) {
+    .logo-text { display: none; }
+    .logo-img { margin-right: 0; }
+}
+
+/* Respecte l’accessibilité: pas d’animation si l’utilisateur préfère réduire les mouvements */
+@media (prefers-reduced-motion: reduce) {
+    .logo-text { transition: none !important; }
 }
 
 /* Offset pour les sections lors du scroll */
