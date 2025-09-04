@@ -103,9 +103,6 @@ nav ul {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
 }
 
 nav ul li {
@@ -295,7 +292,7 @@ footer {
 }
 
 /* Responsive Design */
-@media (max-width: 1080px) {
+@media (max-width: 1140px) {
     .main-container {
         width: 95%;
         padding: 10px;
