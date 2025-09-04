@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fermer/normaliser le menu quand on repasse en desktop pour éviter les états incohérents
-    let wasMobile = window.matchMedia('(max-width: 992px)').matches;
+    let wasMobile = window.matchMedia('(max-width: 1080px)').matches;
     window.addEventListener('resize', () => {
-        const isMobile = window.matchMedia('(max-width: 992px)').matches;
+        const isMobile = window.matchMedia('(max-width: 1080px)').matches;
         if (!isMobile && wasMobile) {
             closeMenu();
         }
