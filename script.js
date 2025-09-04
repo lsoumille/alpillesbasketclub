@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeMenu() {
         mobileMenuToggle.classList.remove('active');
         navMenu.classList.remove('active');
+        document.body.classList.remove('menu-open');
     }
 
     mobileMenuToggle.addEventListener('click', function(event) {
         event.stopPropagation();
         mobileMenuToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
     });
 
     navLinks.forEach(link => {

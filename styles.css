@@ -13,6 +13,14 @@
 }
 
 /* Reset et styles de base */
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -160,6 +168,10 @@ nav ul li a:hover {
 .mobile-menu-toggle.active span:nth-child(3) {
     top: 11px;
     transform: rotate(-45deg);
+}
+
+body.menu-open {
+    overflow-x: hidden;
 }
 
 /* Main et sections */
