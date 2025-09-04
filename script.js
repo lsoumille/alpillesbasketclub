@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeMenu() {
         mobileMenuToggle.classList.remove('active');
         navMenu.classList.remove('active');
+        document.body.classList.remove('menu-open');
     }
 
     mobileMenuToggle.addEventListener('click', function(event) {
         event.stopPropagation();
         mobileMenuToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
     });
 
     navLinks.forEach(link => {
@@ -28,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fermer/normaliser le menu quand on repasse en desktop pour éviter les états incohérents
-    let wasMobile = window.matchMedia('(max-width: 992px)').matches;
+    let wasMobile = window.matchMedia('(max-width: 1140px)').matches;
     window.addEventListener('resize', () => {
-        const isMobile = window.matchMedia('(max-width: 992px)').matches;
+        const isMobile = window.matchMedia('(max-width: 1140px)').matches;
         if (!isMobile && wasMobile) {
             closeMenu();
         }
