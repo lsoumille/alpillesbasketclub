@@ -13,14 +13,6 @@
 }
 
 /* Reset et styles de base */
-html {
-    box-sizing: border-box;
-}
-
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
 html, body {
     margin: 0;
     padding: 0;
@@ -170,10 +162,6 @@ nav ul li a:hover {
     transform: rotate(-45deg);
 }
 
-body.menu-open {
-    overflow-x: hidden;
-}
-
 /* Main et sections */
 main {
     padding: 0;
@@ -278,6 +266,7 @@ p {
 
 /* Couleurs spécifiques au hover */
 .social-link.facebook:hover { color: var(--color-facebook); }
+.social-link.instagram:hover { color: #E1306C; }
 .social-link.email:hover { color: var(--color-secondary); }
 .social-link.helloasso:hover { color: var(--color-helloasso); }
 
@@ -292,7 +281,7 @@ footer {
 }
 
 /* Responsive Design */
-@media (max-width: 1140px) {
+@media (max-width: 992px) {
     .main-container {
         width: 95%;
         padding: 10px;
