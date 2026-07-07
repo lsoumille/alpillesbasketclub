@@ -1,45 +1,81 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Marquer le DOM comme prêt pour activer certaines transitions CSS sans flicker
+document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.add('js-ready');
-    // ===================== Mobile Menu =====================
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    const navLinks = document.querySelectorAll('.nav-menu a');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function closeMenu() {
-        mobileMenuToggle.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.classList.remove('menu-open');
+    // ===================== Header rétractable ======================
+    const header = document.getElementById('siteHeader');
+    if (header) {
+        const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
     }
 
-    mobileMenuToggle.addEventListener('click', function(event) {
-        event.stopPropagation();
-        mobileMenuToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
-    });
+    // ===================== Menu mobile =============================
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', closeMenu);
-    });
+    if (navToggle && navMenu) {
+        const navLinks = navMenu.querySelectorAll('a');
 
-    document.addEventListener('click', function(event) {
-        if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-            closeMenu();
+        function closeMenu() {
+            navMenu.classList.remove('is-open');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.setAttribute('aria-label', 'Ouvrir le menu');
         }
-    });
 
-    // Fermer/normaliser le menu quand on repasse en desktop pour éviter les états incohérents
-    let wasMobile = window.matchMedia('(max-width: 1140px)').matches;
-    window.addEventListener('resize', () => {
-        const isMobile = window.matchMedia('(max-width: 1140px)').matches;
-        if (!isMobile && wasMobile) {
-            closeMenu();
+        function openMenu() {
+            navMenu.classList.add('is-open');
+            navToggle.setAttribute('aria-expanded', 'true');
+            navToggle.setAttribute('aria-label', 'Fermer le menu');
         }
-        wasMobile = isMobile;
-    });
 
-    // ===================== Generic Carousel Initializer =====================
+        navToggle.addEventListener('click', function (event) {
+            event.stopPropagation();
+            if (navMenu.classList.contains('is-open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        navLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+        document.addEventListener('click', function (event) {
+            if (!navMenu.contains(event.target) && !navToggle.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closeMenu();
+        });
+
+        // Réinitialiser en repassant sur desktop
+        let wasMobile = window.matchMedia('(max-width: 900px)').matches;
+        window.addEventListener('resize', () => {
+            const isMobile = window.matchMedia('(max-width: 900px)').matches;
+            if (!isMobile && wasMobile) closeMenu();
+            wasMobile = isMobile;
+        });
+    }
+
+    // ===================== Scroll-reveal ===========================
+    const revealEls = document.querySelectorAll('.reveal');
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+        revealEls.forEach(el => el.classList.add('is-visible'));
+    } else {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+        revealEls.forEach(el => observer.observe(el));
+    }
+
+    // ===================== Carrousel générique =====================
     function initCarousel(sectionElement) {
         const track = sectionElement.querySelector('.carousel-track');
         const viewport = sectionElement.querySelector('.carousel-viewport');
@@ -47,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const nextBtn = sectionElement.querySelector('.next');
         const dotsContainer = sectionElement.querySelector('.carousel-dots');
         const emptyMsg = sectionElement.querySelector('.carousel-empty');
-        const sectionId = sectionElement.id; // 'photos' or 'sponsors'
+        const sectionId = sectionElement.id; // 'photos' ou 'sponsors'
 
         if (!track || !viewport || !prevBtn || !nextBtn || !dotsContainer || !emptyMsg) {
             console.error(`Carousel structure missing in section #${sectionId}`);
@@ -63,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!slides.length) return;
             currentIndex = (index + slides.length) % slides.length;
             const offset = -currentIndex * viewport.clientWidth;
-            track.style.transition = animate ? 'transform 0.4s ease' : 'none';
+            track.style.transition = (animate && !prefersReducedMotion) ? 'transform 0.45s cubic-bezier(0.4,0,0.2,1)' : 'none';
             track.style.transform = `translateX(${offset}px)`;
             updateDots();
         }
@@ -75,14 +111,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function startAuto() {
             stopAuto();
+            if (prefersReducedMotion || slides.length < 2) return;
             autoTimer = setInterval(() => navigate(1), AUTO_DELAY);
         }
 
         function stopAuto() {
-            if (autoTimer) {
-                clearInterval(autoTimer);
-                autoTimer = null;
-            }
+            if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
         }
 
         function navigate(direction) {
@@ -103,8 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 imageEl.src = imgData.src;
 
                 let slideContent = imageEl;
-
-                // If href is present, wrap the image in a link
                 if (imgData.href) {
                     const link = document.createElement('a');
                     link.href = imgData.href;
@@ -113,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.appendChild(imageEl);
                     slideContent = link;
                 }
-                
+
                 li.appendChild(slideContent);
                 track.appendChild(li);
 
@@ -122,10 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dot.type = 'button';
                 dot.setAttribute('role', 'tab');
                 dot.setAttribute('aria-label', `Aller à l'élément ${i + 1}`);
-                dot.addEventListener('click', () => {
-                    setIndex(i);
-                    startAuto();
-                });
+                dot.addEventListener('click', () => { setIndex(i); startAuto(); });
                 dotsContainer.appendChild(dot);
                 return li;
             });
@@ -153,10 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (e) {
                 console.error(`Failed to load carousel for #${sectionId}:`, e);
             }
-            buildSlides([]); // Ensure carousel is empty on failure
+            buildSlides([]);
         }
 
-        // --- Event Listeners ---
+        // --- Écouteurs ---
         prevBtn.addEventListener('click', () => navigate(-1));
         nextBtn.addEventListener('click', () => navigate(1));
 
@@ -164,6 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
             if (e.key === 'ArrowRight') { e.preventDefault(); navigate(1); }
         });
+
+        viewport.addEventListener('mouseenter', stopAuto);
+        viewport.addEventListener('mouseleave', startAuto);
 
         window.addEventListener('resize', () => setIndex(currentIndex, { animate: false }));
 
@@ -174,14 +206,14 @@ document.addEventListener('DOMContentLoaded', function() {
             touchStartX = e.touches[0].clientX;
             touchDeltaX = 0;
             track.style.transition = 'none';
-        });
+        }, { passive: true });
 
         viewport.addEventListener('touchmove', (e) => {
             if (!slides.length) return;
             touchDeltaX = e.touches[0].clientX - touchStartX;
             const offset = -currentIndex * viewport.clientWidth + touchDeltaX;
             track.style.transform = `translateX(${offset}px)`;
-        });
+        }, { passive: true });
 
         viewport.addEventListener('touchend', () => {
             const threshold = viewport.clientWidth * 0.2;
@@ -196,14 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
         loadManifest();
     }
 
-    // Initialize all carousels on the page
     const photosSection = document.getElementById('photos');
-    if (photosSection) {
-        initCarousel(photosSection);
-    }
+    if (photosSection) initCarousel(photosSection);
 
     const sponsorsSection = document.getElementById('sponsors');
-    if (sponsorsSection) {
-        initCarousel(sponsorsSection);
-    }
+    if (sponsorsSection) initCarousel(sponsorsSection);
 });
