@@ -407,6 +407,8 @@ button:focus-visible,
     width: 100%;
 }
 .hero-copy { max-width: 62rem; }
+.hero-eyebrow { font-size: clamp(0.95rem, 1.4vw, 1.2rem); letter-spacing: 0.2em; margin-bottom: 1.1rem; }
+.hero-eyebrow::before { width: 38px; }
 .hero-title {
     font-size: var(--fs-hero);
     font-weight: 900;
